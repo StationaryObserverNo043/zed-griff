@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>宇宙語翻訳『ゼド・グリフ』</title>
+
+<meta name="description" content="恒点観測員043号が開発した地球防衛ガジェット。地球言語（ひらがな・カタカナ）をゼド・グリフへ変換する暗号化記録装置。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="宇宙語翻訳『ゼド・グリフ』">
+<meta property="og:description" content="恒点観測員043号が開発した地球防衛ガジェット。地球言語をゼド・グリフへ変換する暗号化記録装置。">
+<meta property="og:image" content="mascot.jpg">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@teabreak_inv">
+<meta name="twitter:image" content="mascot.jpg">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="宇宙語翻訳『ゼド・グリフ』">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#01040a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #01040a;
+  --panel: #060d1a;
+  --panel2: #0a1628;
+  --border: #0e2040;
+  --border2: #1a3560;
+  --accent: #00e5ff;
+  --accent2: #7b61ff;
+  --accent3: #ff6b35;
+  --text: #e8f4ff;
+  --dim: #4a6080;
+  --dim2: #2a4060;
+  --vh: 100dvh;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; overscroll-behavior: none; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  line-height: 1.7;
+  height: 100vh;
+  height: var(--vh);
+  overflow: hidden;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,229,255,0.015) 2px,
+    rgba(0,229,255,0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ── STAR FIELD ── */
+.stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle var(--d, 3s) infinite var(--delay, 0s);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: var(--min, 0.1); }
+  50% { opacity: var(--max, 0.8); }
+}
+
+/* ── APP SHELL (画面全体を1ビューポートに収める) ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: var(--vh);
+  max-width: 560px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── HEADER（コンパクト化） ── */
+.app-header {
+  flex: 0 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.header-glow {
+  position: absolute;
+  top: -60px; left: 50%;
+  transform: translateX(-50%);
+  width: 420px; height: 160px;
+  background: radial-gradient(ellipse, rgba(0,229,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.nav-back {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 12px;
+  color: var(--dim);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+  position: relative; z-index: 1;
+}
+.nav-back-label { font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 0.5px; }
+.nav-back:active { border-color: var(--accent); color: var(--accent); }
+.header-title { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+.mission-badge {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(0,229,255,0.06);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 20px;
+  padding: 4px 9px;
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.mission-badge::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); animation: blink 1.2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.title-block { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+
+h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(13px, 4vw, 17px);
+  font-weight: 900;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.title-sub {
+  margin: 0;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── PRIMARY TAB NAV（INPUT / MANUAL 切替） ── */
+.tab-nav {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(1,4,10,0.92);
+}
+.tab-btn {
+  flex: 1;
+  min-height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--dim);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.tab-btn[aria-selected="true"] {
+  color: #01040a;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  border-color: transparent;
+  font-weight: 700;
+}
+.tab-btn:active { transform: scale(0.97); }
+.tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── MAIN（残り高さ全て・画面ごとにここへ収める） ── */
+.app-main { flex: 1 1 auto; min-height: 0; position: relative; }
+.screen { display: none; flex-direction: column; height: 100%; min-height: 0; padding: 14px 14px 16px; }
+.screen.active { display: flex; animation: fadein 0.3s ease; }
+@keyframes fadein { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+/* ── INPUT SCREEN ── */
+.io-stack { display: flex; flex-direction: column; gap: 10px; height: 100%; min-height: 0; }
+
+.direction-bar { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.direction-label { font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 1px; color: var(--dim); transition: color 0.2s; }
+.direction-label.active { color: var(--accent); }
+.direction-btn {
+  flex: 0 0 auto;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: rgba(0,229,255,0.05);
+  color: var(--accent);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+}
+.direction-btn:active { transform: rotate(180deg) scale(0.92); border-color: var(--accent); background: rgba(0,229,255,0.12); }
+
+.panel-card {
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent), var(--accent3));
+}
+.input-panel { flex: 1 1 42%; }
+.output-panel { flex: 1 1 42%; }
+
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex: 0 0 auto; }
+.field-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.field-hint { font-size: 10px; color: var(--dim); white-space: nowrap; }
+
+textarea#src {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  resize: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  padding: 12px;
+}
+textarea#src:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,229,255,0.25); }
+textarea#src::placeholder { color: var(--dim); }
+
+.input-meta-row { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+.prefix-row { display: flex; gap: 6px; overflow-x: auto; flex: 1 1 auto; padding-bottom: 2px; scrollbar-width: none; -ms-overflow-style: none; }
+.prefix-row::-webkit-scrollbar { display: none; }
+.prefix-btn {
+  appearance: none;
+  flex: 0 0 auto;
+  min-height: 32px;
+  background: rgba(0,229,255,0.06);
+  border: 1px solid rgba(0,229,255,0.15);
+  border-radius: 16px;
+  color: var(--accent);
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.prefix-btn:active { background: rgba(0,229,255,0.18); transform: scale(0.96); }
+.prefix-btn .g { margin-right: 4px; }
+.prefix-btn .p-pron { margin-left: 5px; color: var(--accent3); font-size: 9px; opacity: 0.85; }
+.char-count { flex: 0 0 auto; font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 0.5px; color: var(--dim); white-space: nowrap; }
+.char-count.warn { color: var(--accent3); }
+.char-count.full { color: #ff4d6d; }
+
+.convert-btn {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  border: none;
+  border-radius: 12px;
+  color: #01040a;
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,229,255,0.18);
+  transition: all 0.2s;
+}
+.convert-btn:active { filter: brightness(0.92); transform: scale(0.99); }
+
+.output-label { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+.output-label .tag { font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 1px; color: var(--dim); }
+.output-label .status { font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 1px; color: var(--accent); white-space: nowrap; }
+.output-label .status.error { color: #ff4d6d; }
+.pron-toggle[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: rgba(0,229,255,0.1); font-weight: 700; }
+
+.pron-line {
+  display: none;
+  flex: 0 0 auto;
+  margin-top: 8px;
+  padding: 9px 11px;
+  max-height: 25%;
+  overflow-y: auto;
+  background: rgba(0,229,255,0.09);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(0,229,255,0.3);
+  line-height: 1.7;
+  word-break: break-word;
+}
+.pron-line.show { display: block; }
+
+#out {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-shadow: 0 0 12px rgba(0,229,255,0.25);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+#out.empty {
+  color: var(--dim);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  text-shadow: none;
+  letter-spacing: 0;
+  line-height: 1.8;
+}
+#out .cursor {
+  display: inline-block; width: 0.5em; height: 1em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  animation: blink 1.1s step-end infinite;
+}
+
+.action-row { flex: 0 0 auto; display: flex; gap: 8px; margin-top: 10px; }
+button.ghost {
+  flex: 1;
+  min-height: 42px;
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  border-radius: 9px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--dim);
+  transition: all 0.2s;
+}
+button.ghost:active { border-color: var(--accent); color: var(--accent); transform: scale(0.98); }
+
+/* ── GUIDE SCREEN（サブタブで4パートに分割し、各画面完結） ── */
+#screen-guide { padding: 12px 14px 14px; }
+.subtab-nav {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  scrollbar-width: none;
+}
+.subtab-nav::-webkit-scrollbar { display: none; }
+.subtab-btn {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 7px 13px;
+  border-radius: 18px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--dim);
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.subtab-btn[aria-selected="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(0,229,255,0.08);
+}
+.subtab-btn:active { transform: scale(0.96); }
+
+.guide-panes { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.guide-pane { display: none; height: 100%; }
+.guide-pane.active { display: flex; flex-direction: column; }
+
+.section-title { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; letter-spacing: 1px; margin-bottom: 12px; color: #fff; flex: 0 0 auto; }
+
+.guide-block { font-size: 13px; color: #aac0d8; line-height: 2.1; overflow-y: auto; min-height: 0; }
+.guide-block p { margin: 0 0 1.2em; }
+.guide-block .voice { color: #aac0d8; font-size: 13px; }
+.guide-block .em { color: var(--accent); }
+
+.mini-tester {
+  flex: 0 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.mini-tester-label {
+  display: block;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  color: var(--dim);
+  letter-spacing: 0.5px;
+  margin-bottom: 9px;
+}
+.mini-tester-row { display: flex; align-items: center; gap: 8px; }
+#miniChar {
+  flex: 0 0 64px;
+  width: 64px;
+  min-height: 44px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 18px;
+  padding: 8px 4px;
+}
+#miniChar:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,229,255,0.25); }
+#miniChar::placeholder { color: var(--dim); }
+.mini-tester-arrow { flex: 0 0 auto; color: var(--dim); font-family: 'Orbitron', monospace; font-size: 12px; }
+.mini-tester-result {
+  flex: 1 1 auto;
+  min-height: 44px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+}
+.mini-glyph {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0,229,255,0.25);
+  line-height: 1.1;
+}
+.mini-pron {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.mini-tester-result.error .mini-glyph {
+  color: #ff4d6d;
+  font-size: 12px;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 1px;
+  text-shadow: none;
+}
+
+.ref-section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin: 18px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border2);
+}
+.ref-section-title:first-of-type { margin-top: 4px; }
+.ref-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron', monospace; font-size: 11px; margin: 0 0 6px; flex: 0 0 auto; border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; }
+.ref-table th, .ref-table td { border: 1px solid var(--border); padding: 9px 4px; text-align: center; color: var(--text); }
+.ref-table th { background: rgba(0,229,255,0.08); color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
+.ref-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.ref-table td.g { color: var(--accent); font-size: 15px; line-height: 1.3; }
+.ref-table .pron { display: block; font-family: 'Orbitron', monospace; font-size: 10px; font-weight: 700; color: var(--accent3); letter-spacing: 0.5px; margin-top: 4px; }
+.ref-note { font-size: 11px; color: var(--dim); line-height: 1.9; margin: 0 0 4px; background: rgba(0,229,255,0.04); border-left: 2px solid var(--accent2); border-radius: 4px; padding: 10px 12px; }
+.ref-note .rule { display: block; }
+.ref-note .rule + .rule { margin-top: 4px; }
+.ref-note .ex { display: block; color: var(--accent3); margin-top: 6px; }
+.ref-note .k { color: var(--accent); font-weight: 700; }
+
+.mascot-figure { flex: 0 0 auto; margin-top: 6px; text-align: center; }
+.mascot-figure img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  display: block;
+}
+.mascot-figure figcaption {
+  margin-top: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--dim);
+}
+
+.contact-card {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-decoration: none; color: inherit;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+.contact-card:active { border-color: var(--accent); transform: scale(0.99); }
+.contact-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+  background: rgba(0,0,0,0.6); border: 1px solid #333;
+}
+.contact-info { flex: 1; }
+.contact-name { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 2px; }
+.contact-sub { font-size: 11px; color: var(--dim); }
+.contact-arrow { font-family: 'Orbitron', monospace; font-size: 10px; color: var(--accent); opacity: 0.5; }
+
+.mission-footnote { flex: 0 0 auto; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); text-align: center; }
+.footnote-logo { font-family: 'Orbitron', monospace; font-size: 9px; color: var(--dim); letter-spacing: 2px; margin-bottom: 6px; }
+.footnote-note { font-size: 10px; color: var(--dim2); line-height: 1.7; margin-bottom: 10px; }
+.nasa-warning {
+  display: inline-block;
+  background: rgba(255,107,53,0.06);
+  border: 1px solid rgba(255,107,53,0.2);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  color: var(--accent3);
+  letter-spacing: 1px;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; left: 50%; bottom: 22px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--panel2);
+  border: 1px solid var(--border2);
+  color: var(--accent);
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-height: 600px) {
+  .app-header { padding: 7px 14px; }
+  .tab-nav { padding: 7px 14px; }
+  .tab-btn { min-height: 36px; }
+  .panel-card { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <header class="app-header">
+    <div class="header-glow"></div>
+    <a class="nav-back" href="https://stationaryobserverno043.github.io/mission-home/apps.html" aria-label="他のガジェットへ戻る">◁ <span class="nav-back-label">他のガジェット</span></a>
+    <div class="header-title">
+      <span class="mission-badge">🛸 OBS-043</span>
+      <div class="title-block">
+        <h1>ゼド・グリフ</h1>
+        <p class="title-sub">―宇宙語翻訳―</p>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn" id="tab-input" role="tab" aria-selected="true" aria-controls="screen-input">⚡️ 暗号化</button>
+    <button class="tab-btn" id="tab-guide" role="tab" aria-selected="false" aria-controls="screen-guide">📖 マニュアル</button>
+  </nav>
+
+  <main class="app-main">
+
+    <!-- INPUT SCREEN -->
+    <section class="screen active" id="screen-input" role="tabpanel" aria-labelledby="tab-input">
+      <div class="io-stack">
+
+        <div class="direction-bar">
+          <span class="direction-label active" id="modeFrom">🌍 地球語</span>
+          <button class="direction-btn" id="btnDirection" aria-label="変換方向を反転">⇄</button>
+          <span class="direction-label" id="modeTo">🪬 ゼド・グリフ</span>
+        </div>
+
+        <div class="panel-card input-panel">
+          <div class="panel-head">
+            <label class="field-label" for="src" id="fieldLabel">地球語入力</label>
+            <span class="field-hint" id="fieldHint">ひらがな・カタカナ対応</span>
+          </div>
+          <textarea id="src" maxlength="100" placeholder="ここに観測記録を入力せよ。例：ホシ ヲ メグル タビ"></textarea>
+          <div class="input-meta-row">
+            <div class="prefix-row" id="prefixRow">
+              <button class="prefix-btn" data-glyph="⍓"><span class="g">⍓</span>人<span class="p-pron">H'Ma</span></button>
+              <button class="prefix-btn" data-glyph="⎔"><span class="g">⎔</span>物<span class="p-pron">O'Ra</span></button>
+              <button class="prefix-btn" data-glyph="⌗"><span class="g">⌗</span>場所<span class="p-pron">L'Va</span></button>
+              <button class="prefix-btn" data-glyph="☰"><span class="g">☰</span>概念<span class="p-pron">R'Ze</span></button>
+            </div>
+            <span class="char-count"><span class="count" id="count">0</span>/<span id="maxLenLabel">100</span></span>
+          </div>
+        </div>
+
+        <button class="convert-btn" id="btnConvert">⚡️ 変換実行</button>
+
+        <div class="panel-card output-panel">
+          <div class="output-label">
+            <span class="tag" id="outputTag">// 解読ログ出力</span>
+            <span class="status" id="statusTag">待機中デス</span>
+          </div>
+          <div id="out" class="empty">ここに変換結果が表示されマス<span class="cursor"></span></div>
+          <div class="pron-line" id="pronLine"></div>
+          <div class="action-row">
+            <button type="button" class="ghost pron-toggle" id="btnPronToggle" aria-pressed="false">🔊 発音</button>
+            <button class="ghost" id="btnCopy">📋 複写</button>
+            <button class="ghost" id="btnClear">🗑 消去</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- GUIDE SCREEN -->
+    <section class="screen" id="screen-guide" role="tabpanel" aria-labelledby="tab-guide">
+
+      <nav class="subtab-nav" role="tablist" aria-label="マニュアル項目">
+        <button class="subtab-btn" data-pane="transmission" role="tab" aria-selected="true">🛸 あいさつ</button>
+        <button class="subtab-btn" data-pane="howto" role="tab" aria-selected="false">🛠 使い方</button>
+        <button class="subtab-btn" data-pane="ref" role="tab" aria-selected="false">🔤 対応表</button>
+        <button class="subtab-btn" data-pane="contact" role="tab" aria-selected="false">📡 交信</button>
+      </nav>
+
+      <div class="guide-panes">
+
+        <div class="guide-pane active" data-pane="transmission">
+          <div class="guide-block">
+            <p class="voice">ハロー、ハロー👽️✨</p>
+            <p>コレはワタシの母星語『<span class="em">ゼド・グリフ</span>』を、地球語から変換するための簡易翻訳装置デス🌐🛠️</p>
+            <p>作戦の目的は、地球とゼド星系の友好親善デス👉️✨👈️</p>
+            <p>使い方は、トテモ簡単🚀💫</p>
+            <p>🌍ひらがな・カタカナで入力 → ⚡️変換実行 → 🪬ゼド・グリフへ暗号化</p>
+            <p>アルファベットは非対応デス。「コンピューター」など、カタカナで入力して下サイ🔮⚡️</p>
+            <p>奇跡的というか、統計的にありえないレベルの偶然デスが……</p>
+            <p>ゼド・グリフの文法構造は、なぜか地球語（日本語）の五十音・文法とほぼ一致しているコトが判明しマシタ🔬✨</p>
+            <p>ワタシとアナタは、銀河を超えたトモダチといえるでしょウ👽️💫</p>
+            <p>コレでアナタも、秘密工作員😎💥</p>
+          </div>
+          <figure class="mascot-figure">
+            <img src="mascot.jpg" alt="ゲームに熱中する宇宙人ヒマジンのイラスト" loading="lazy">
+            <figcaption>宇宙人ヒマジン</figcaption>
+          </figure>
+        </div>
+
+        <div class="guide-pane" data-pane="howto">
+          <div class="guide-block">
+            <p>1. 「暗号化」画面に、ひらがな・カタカナで変換したい文章を入力してネ！上限は100字デス🌍️✨</p>
+            <p>2. アルファベットは受信できまセン！「コンピューター」のように、和製英語表記へ変換してから入力して下サイ🔠🛠️</p>
+            <p>3. 「変換実行」をポチッと押して下サイ。解読ログ欄に、ゼド・グリフが出力されマス🪬🧬</p>
+            <p>4. 非対応の記号を入力すると、変換されずそのまま出力され『⚠️ERROR!!』が表示されマス🚨⚡️</p>
+          </div>
+        </div>
+
+        <div class="guide-pane" data-pane="ref">
+          <div class="guide-block">
+            <p class="voice">🔤 読み方の基本ルール</p>
+            <p>・母音（あ行）はそのまま：A・I・U・E・O</p>
+            <p>・それ以外の行は「子音①＋'＋子音②＋母音」の形デス：例）た＝R'Qa</p>
+            <p>・濁点／半濁点は子音①が変化：か→G、さ→Z、た→R'G、は→B'（濁）/P'（半濁）　例）ぎ＝Gi、ぽ＝P'Lo</p>
+            <p>・拗音（きょ・しゃ等）は、元の仮名の発音とや行の発音をそのまま並べて表記：例）きょ＝Xi + Yo（き＋よ）</p>
+            <p>・カテゴリ（人物場所概念）と数字は、専用の読みデス</p>
+          </div>
+          <div class="mini-tester">
+            <label class="mini-tester-label" for="miniChar">🔍 試験入力（気になる文字をここで確認）</label>
+            <div class="mini-tester-row">
+              <input type="text" id="miniChar" maxlength="2" placeholder="例：ヌ" autocomplete="off" autocapitalize="off">
+              <span class="mini-tester-arrow">▷</span>
+              <div class="mini-tester-result" id="miniResult">
+                <span class="mini-glyph" id="miniGlyph">–</span>
+                <span class="mini-pron" id="miniPron"></span>
+              </div>
+            </div>
+          </div>
+          <p class="ref-section-title">▍清音サンプル</p>
+          <table class="ref-table">
+            <tr><th>仮名</th><th>グリフ</th><th>仮名</th><th>グリフ</th><th>仮名</th><th>グリフ</th></tr>
+            <tr><td>あ</td><td class="g">⍙<span class="pron">A</span></td><td>か</td><td class="g">⋗<span class="pron">Xa</span></td><td>さ</td><td class="g">⌖<span class="pron">S'Ra</span></td></tr>
+            <tr><td>た</td><td class="g">⊏<span class="pron">R'Qa</span></td><td>な</td><td class="g">⋰<span class="pron">N'Ma</span></td><td>は</td><td class="g">⌕<span class="pron">F'La</span></td></tr>
+            <tr><td>ー(長音)</td><td class="g">⎼<span class="pron">R'V</span></td><td>゛(濁点)</td><td class="g">〨<span class="pron">子音変化</span></td><td>゜(半濁点)</td><td class="g">⊛<span class="pron">子音変化</span></td></tr>
+          </table>
+          <p class="ref-note">
+            <span class="rule">※グリフ下の小さな文字はゼド・グリフ発音（読み）デス</span>
+            <span class="rule">拗音・小文字母音は自動解析により合成されるヨ</span>
+          </p>
+
+          <p class="ref-section-title">▍濁音・半濁音の発音変化</p>
+          <table class="ref-table">
+            <tr><th>清音</th><th>濁音</th><th>清音</th><th>濁音</th></tr>
+            <tr><td>か Xa</td><td><span class="pron">が Ga</span></td><td>さ S'Ra</td><td><span class="pron">ざ Z'Ra</span></td></tr>
+            <tr><td>た R'Qa</td><td><span class="pron">だ R'Ga</span></td><td>は F'La</td><td><span class="pron">ば B'La</span></td></tr>
+            <tr><td>は F'La</td><td colspan="3">半濁音 → <span class="pron">ぱ P'La</span></td></tr>
+          </table>
+          <p class="ref-note">
+            <span class="rule">※濁点・半濁点は「修飾」ではなく<span class="k">子音そのもの</span>が変化するデス</span>
+            <span class="rule">か→G　さ→Z　た→R'G　は→B'（濁）／P'（半濁）</span>
+            <span class="ex">例）ぎ＝Gi　づ＝R'Gu　ぽ＝P'Lo</span>
+            <span class="rule">※母音（段）部分は清音のまま維持されるヨ</span>
+          </p>
+
+          <p class="ref-section-title">▍カテゴリ接頭辞</p>
+          <table class="ref-table">
+            <tr><th>カテゴリ</th><th>グリフ</th><th>カテゴリ</th><th>グリフ</th></tr>
+            <tr><td>人</td><td class="g">⍓<span class="pron">H'Ma</span></td><td>物</td><td class="g">⎔<span class="pron">O'Ra</span></td></tr>
+            <tr><td>場所</td><td class="g">⌗<span class="pron">L'Va</span></td><td>概念</td><td class="g">☰<span class="pron">R'Ze</span></td></tr>
+          </table>
+          <p class="ref-note">※カテゴリ接頭辞の発音デス。論理解読キーII章に基づく正式発音。</p>
+
+          <p class="ref-section-title">▍数字の発音</p>
+          <table class="ref-table">
+            <tr><th>数字</th><th>発音</th><th>数字</th><th>発音</th></tr>
+            <tr><td>0</td><td><span class="pron">D'Ze</span></td><td>1</td><td><span class="pron">D'I</span></td></tr>
+            <tr><td>2</td><td><span class="pron">D'Ni</span></td><td>3</td><td><span class="pron">D'Sa</span></td></tr>
+            <tr><td>4</td><td><span class="pron">D'Yo</span></td><td>5</td><td><span class="pron">D'Tsu</span></td></tr>
+            <tr><td>6</td><td><span class="pron">D'Ro</span></td><td>7</td><td><span class="pron">D'Na</span></td></tr>
+            <tr><td>8</td><td><span class="pron">D'Ha</span></td><td>9</td><td><span class="pron">D'Kyu</span></td></tr>
+          </table>
+          <p class="ref-note">※数字の発音は論理解読キーに未収録のため、日本語数詞（いち・に・さん…）の頭音に「D'」を付した仮発音デス。</p>
+        </div>
+
+        <div class="guide-pane" data-pane="contact">
+          <div class="guide-block">
+            <p>📡不具合を見つけたら、あるいはワタシとお話ししたくなったら、下の回線を使ってネ✨</p>
+          </div>
+          <a class="contact-card" href="https://x.com/teabreak_inv" target="_blank" rel="noopener noreferrer">
+            <div class="contact-icon">📡</div>
+            <div class="contact-info">
+              <div class="contact-name">X（旧Twitter）</div>
+              <div class="contact-sub">@teabreak_inv へ交信を送る</div>
+            </div>
+            <div class="contact-arrow">▷</div>
+          </a>
+          <div class="mission-footnote">
+            <div class="footnote-logo">OBS-043 ｜ ZED SYSTEM ｜ グレイ＝ニートゥ＝ヒマジン</div>
+            <div class="footnote-note">地球侵略阻止ミッション — Mission Earth Guard</div>
+            <div class="nasa-warning">⚠️ NASAには通報しないでネ</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ 変換テーブル定義 ============ */
+
+  const SEION = {
+    'あ':'⍙','い':'⊶','う':'⍱','え':'⊎','お':'⊚',
+    'か':'⋗','き':'⋛','く':'⋙','け':'⋌','こ':'⋚',
+    'さ':'⌖','し':'⌇','す':'⨂','せ':'⋏','そ':'⨹',
+    'た':'⊏','ち':'⊐','つ':'⫿','て':'⊞','と':'⊠',
+    'な':'⋰','に':'⌙','ぬ':'⊸','ね':'⌑','の':'⎓',
+    'は':'⌕','ひ':'⍜','ふ':'⍽','へ':'⍀','ほ':'⌿',
+    'ま':'⍎','み':'⌹','む':'⎎','め':'⎏','も':'⍦',
+    'や':'⍰','ゆ':'⍕','よ':'⍌',
+    'ら':'⎘','り':'⎙','る':'⎚','れ':'⍺','ろ':'⍸',
+    'わ':'⍶','を':'⍹','ん':'⍮'
+  };
+
+  const DAKUTEN_BASE = {
+    'が':'か','ぎ':'き','ぐ':'く','げ':'け','ご':'こ',
+    'ざ':'さ','じ':'し','ず':'す','ぜ':'せ','ぞ':'そ',
+    'だ':'た','ぢ':'ち','づ':'つ','で':'て','ど':'と',
+    'ば':'は','び':'ひ','ぶ':'ふ','べ':'へ','ぼ':'ほ'
+  };
+
+  const HANDAKUTEN_BASE = {
+    'ぱ':'は','ぴ':'ひ','ぷ':'ふ','ぺ':'へ','ぽ':'ほ'
+  };
+
+  // 濁音の発音（子音置換方式）：か→G／さ→Z／た→R'G／は→B'
+  const DAKUTEN_PRON = {
+    'が':'Ga','ぎ':'Gi','ぐ':'Gu','げ':'Ge','ご':'Go',
+    'ざ':"Z'Ra",'じ':"Z'Ri",'ず':"Z'Ru",'ぜ':"Z'Re",'ぞ':"Z'Ro",
+    'だ':"R'Ga",'ぢ':"R'Gi",'づ':"R'Gu",'で':"R'Ge",'ど':"R'Go",
+    'ば':"B'La",'び':"B'Li",'ぶ':"B'Lu",'べ':"B'Le",'ぼ':"B'Lo"
+  };
+
+  // 半濁音の発音（子音置換方式）：は行→P'
+  const HANDAKUTEN_PRON = {
+    'ぱ':"P'La",'ぴ':"P'Li",'ぷ':"P'Lu",'ぺ':"P'Le",'ぽ':"P'Lo"
+  };
+
+  const SMALL_YA = { 'ゃ':'や', 'ゅ':'ゆ', 'ょ':'よ' };
+  const SMALL_VOWEL = { 'ぁ':'あ', 'ぃ':'い', 'ぅ':'う', 'ぇ':'え', 'ぉ':'お' };
+
+  // イ段（拗音の前接続として有効な清音・濁音・半濁音）
+  const YOUON_ELIGIBLE = new Set(['き','ぎ','し','じ','ち','ぢ','に','ひ','び','ぴ','み','り']);
+
+  const NUM_MAP = {
+    '0':'⌀','1':'╷','2':'ǁ','3':'⫦','4':'⋓',
+    '5':'⧆','6':'⚹','7':'⎇','8':'⎈','9':'⍼'
+  };
+
+  // 数字の発音（論理解読キーには未収録のため、既存の音韻文法に沿った仮発音）
+  // ※日本語の数詞（いち・に・さん…）の頭音を核に「D'（デジタル/数値マーカー）」を接頭させた合成音
+  const NUM_PRON = {
+    '0':"D'Ze",  // ゼロ → 空虚・無の完全な円
+    '1':"D'I",   // いち → 一点の始まり
+    '2':"D'Ni",  // に → 二つの並行
+    '3':"D'Sa",  // さん → 三つの要素の統合
+    '4':"D'Yo",  // よん → 不完全な枠
+    '5':"D'Tsu", // いつつ → 実体の確定
+    '6':"D'Ro",  // ろく → 論理的な周期
+    '7':"D'Na",  // なな → 交差と逆転
+    '8':"D'Ha",  // はち → 無限または二重構造
+    '9':"D'Kyu"  // きゅう → 円周の欠損
+  };
+
+  const KEPT_PUNCT = new Set(['.', ',', '!', '?', '[', ']', '《', '》']);
+  const SEPARATORS = new Set(['・', ' ', '　']);
+
+  // カテゴリ接頭辞グリフ（人／物／場所／概念）：変換対象外の構造タグとして扱う
+  const CATEGORY_LABEL = { '⍓':'人', '⎔':'物', '⌗':'場所', '☰':'概念' };
+  const CATEGORY_LABEL_REVERSE = invert(CATEGORY_LABEL); // ラベル文字列 → グリフ
+
+  // カテゴリ接頭辞の発音（論理解読キー II-2 章に基づく）
+  const CATEGORY_PRON = { '⍓':"H'Ma", '⎔':"O'Ra", '⌗':"L'Va", '☰':"R'Ze" };
+
+  // ゼド・グリフ発音（ローマ字表記）：論理解読キー III章に基づく
+  const SEION_PRON = {
+    'あ':'A','い':'I','う':'U','え':'E','お':'O',
+    'か':'Xa','き':'Xi','く':'Xu','け':'Xe','こ':'Xo',
+    'さ':"S'Ra",'し':"S'Ri",'す':"S'Ru",'せ':"S'Re",'そ':"S'Ro",
+    'た':"R'Qa",'ち':"R'Qi",'つ':"R'Qu",'て':"R'Qe",'と':"R'Qo",
+    'な':"N'Ma",'に':"N'Mi",'ぬ':"N'Mu",'ね':"N'Me",'の':"N'Mo",
+    'は':"F'La",'ひ':"F'Li",'ふ':"F'Lu",'へ':"F'Le",'ほ':"F'Lo",
+    'ま':"M'a",'み':"M'i",'む':"M'u",'め':"M'e",'も':"M'o",
+    'や':'Ya','ゆ':'Yu','よ':'Yo',
+    'ら':"L'Ra",'り':"L'Ri",'る':"L'Ru",'れ':"L'Re",'ろ':"L'Ro",
+    'わ':'Wa','を':'Wo','ん':"N'M"
+  };
+
+  function isKatakana(ch){
+    const c = ch.codePointAt(0);
+    return c >= 0x30A1 && c <= 0x30F6;
+  }
+  // カタカナ→ひらがな（同じ発音のグリフを流用するための正規化）
+  function toHiragana(ch){
+    if(isKatakana(ch)){
+      return String.fromCharCode(ch.charCodeAt(0) - 0x60);
+    }
+    return ch;
+  }
+
+  // 清音／濁音／半濁音いずれであっても対応グリフを返す
+  function glyphForKana(hira){
+    if(SEION[hira]) return SEION[hira];
+    if(DAKUTEN_BASE[hira]) return SEION[DAKUTEN_BASE[hira]] + '〨';
+    if(HANDAKUTEN_BASE[hira]) return SEION[HANDAKUTEN_BASE[hira]] + '⊛';
+    return null;
+  }
+
+  function convertDetailed(input){
+    const chars = Array.from(input);
+    let result = '';
+    let hasUnsupported = false;
+    let i = 0;
+
+    while(i < chars.length){
+      const ch = chars[i];
+      const next = chars[i+1];
+      const hira = toHiragana(ch);
+      const hiraNext = next !== undefined ? toHiragana(next) : null;
+
+      // 長音符
+      if(ch === 'ー' || ch === '-' ){
+        // 全角/半角の長音のみ対象（ハイフンは非対応記号として素通し）
+        if(ch === 'ー'){ result += '⎼'; i++; continue; }
+      }
+
+      // 句読点・括弧（小数点判定を含む）
+      if(KEPT_PUNCT.has(ch)){
+        if(ch === '.' && chars[i-1] !== undefined && /[0-9]/.test(chars[i-1]) && next !== undefined && /[0-9]/.test(next)){
+          result += '⎲';
+        } else {
+          result += ch;
+        }
+        i++; continue;
+      }
+
+      // 区切り記号
+      if(SEPARATORS.has(ch)){
+        result += ' ';
+        i++; continue;
+      }
+
+      // カテゴリラベル表記「（人）」「(人)」等（全角／半角括弧どちらも対応）：対応グリフへ変換
+      if(ch === '（' || ch === '('){
+        const closeCh = ch === '（' ? '）' : ')';
+        let matched = false;
+        for(const label of Object.keys(CATEGORY_LABEL_REVERSE)){
+          const labelChars = Array.from(label);
+          const end = i + 1 + labelChars.length;
+          if(chars[end] === closeCh && labelChars.every((lc, k) => chars[i+1+k] === lc)){
+            result += CATEGORY_LABEL_REVERSE[label];
+            i = end + 1;
+            matched = true;
+            break;
+          }
+        }
+        if(matched) continue;
+      }
+
+      // 数字
+      if(NUM_MAP[ch]){
+        result += NUM_MAP[ch];
+        i++; continue;
+      }
+
+      // 拗音：イ段（清濁半濁含む）＋ 小さいゃゅょ
+      if(YOUON_ELIGIBLE.has(hira) && hiraNext && SMALL_YA[hiraNext]){
+        const base = glyphForKana(hira);
+        const yaGlyph = SEION[SMALL_YA[hiraNext]];
+        if(base && yaGlyph){
+          result += base + '*' + yaGlyph;
+          i += 2; continue;
+        }
+      }
+
+      // 特殊母音（小さいぁぃぅぇぉ）
+      if(SMALL_VOWEL[hira]){
+        result += '*' + SEION[SMALL_VOWEL[hira]];
+        i++; continue;
+      }
+
+      // 促音（小さいっ）：本官仕様に基づき、つ゚の縮小記号として処理
+      if(hira === 'っ'){
+        result += '*' + SEION['つ'];
+        i++; continue;
+      }
+
+      // 清音・濁音・半濁音
+      const g = glyphForKana(hira);
+      if(g){
+        result += g;
+        i++; continue;
+      }
+
+      // カテゴリ接頭辞グリフ（人／物／場所／概念）：暗号化時はグリフのままエラーにせず出力
+      if(CATEGORY_LABEL[ch]){
+        result += ch;
+        i++; continue;
+      }
+
+      // 未対応文字はそのまま素通し（変換はしないが、警告フラグを立てる）
+      result += ch;
+      hasUnsupported = true;
+      i++;
+    }
+
+    return { result: result, hasUnsupported: hasUnsupported };
+  }
+
+  // 入力文字列（主に1〜2文字の試験入力）に対応するゼド・グリフ発音を組み立てる
+  function buildPronunciation(input){
+    const chars = Array.from(input);
+    const tokens = [];
+    let hasUnknown = false;
+    let i = 0;
+
+    while(i < chars.length){
+      const ch = chars[i];
+      const next = chars[i+1];
+      const hira = toHiragana(ch);
+      const hiraNext = next !== undefined ? toHiragana(next) : null;
+
+      if(ch === 'ー' || ch === '-'){
+        if(ch === 'ー'){ tokens.push("R'V"); i++; continue; }
+      }
+      if(KEPT_PUNCT.has(ch) || SEPARATORS.has(ch)){ i++; continue; }
+
+      // 数字：仮発音を併記
+      if(NUM_MAP[ch]){
+        tokens.push(NUM_PRON[ch]);
+        i++; continue;
+      }
+
+      // カテゴリ接頭辞グリフ（生グリフ）：発音を併記
+      if(CATEGORY_LABEL[ch]){
+        tokens.push(CATEGORY_PRON[ch]);
+        i++; continue;
+      }
+
+      // カテゴリラベル表記「（人）」「(人)」等：対応するカテゴリ発音を併記
+      if(ch === '（' || ch === '('){
+        const closeCh = ch === '（' ? '）' : ')';
+        let matched = false;
+        for(const label of Object.keys(CATEGORY_LABEL_REVERSE)){
+          const labelChars = Array.from(label);
+          const end = i + 1 + labelChars.length;
+          if(chars[end] === closeCh && labelChars.every((lc, k) => chars[i+1+k] === lc)){
+            tokens.push(CATEGORY_PRON[CATEGORY_LABEL_REVERSE[label]]);
+            i = end + 1;
+            matched = true;
+            break;
+          }
+        }
+        if(matched) continue;
+      }
+
+      // 拗音
+      if(YOUON_ELIGIBLE.has(hira) && hiraNext && SMALL_YA[hiraNext]){
+        let base;
+        if(SEION_PRON[hira]) base = SEION_PRON[hira];
+        else if(DAKUTEN_PRON[hira]) base = DAKUTEN_PRON[hira];
+        else if(HANDAKUTEN_PRON[hira]) base = HANDAKUTEN_PRON[hira];
+        const yaPron = SEION_PRON[SMALL_YA[hiraNext]];
+        if(base && yaPron){ tokens.push(base + '+' + yaPron); i += 2; continue; }
+      }
+
+      // 特殊母音
+      if(SMALL_VOWEL[hira]){
+        tokens.push('*' + SEION_PRON[SMALL_VOWEL[hira]]);
+        i++; continue;
+      }
+
+      // 促音
+      if(hira === 'っ'){
+        tokens.push('*' + SEION_PRON['つ']);
+        i++; continue;
+      }
+
+      // 清音・濁音・半濁音
+      if(SEION_PRON[hira]){ tokens.push(SEION_PRON[hira]); i++; continue; }
+      if(DAKUTEN_PRON[hira]){ tokens.push(DAKUTEN_PRON[hira]); i++; continue; }
+      if(HANDAKUTEN_PRON[hira]){ tokens.push(HANDAKUTEN_PRON[hira]); i++; continue; }
+
+      hasUnknown = true;
+      i++;
+    }
+
+    return { pron: tokens.join(' '), hasUnknown: hasUnknown };
+  }
+
+  /* ============ 逆変換（ゼド・グリフ → ひらがな） ============ */
+  // 注：カタカナは暗号化時にひらがなへ正規化されているため、
+  //     元がカタカナだったかの情報は失われている。逆変換の出力は常にひらがなデス。
+
+  function invert(obj){
+    const out = {};
+    for(const k in obj){ out[obj[k]] = k; }
+    return out;
+  }
+
+  const GLYPH_TO_SEION = invert(SEION);            // グリフ → 清音ひらがな
+  const GLYPH_TO_NUM = invert(NUM_MAP);             // グリフ → 数字
+  const DAKUTEN_REVERSE = invert(DAKUTEN_BASE);     // 清音ひらがな → 濁音ひらがな
+  const HANDAKUTEN_REVERSE = invert(HANDAKUTEN_BASE); // 清音ひらがな → 半濁音ひらがな
+  const SMALL_YA_REVERSE = invert(SMALL_YA);        // や/ゆ/よ → ゃ/ゅ/ょ
+  const SMALL_VOWEL_REVERSE = invert(SMALL_VOWEL);  // あ/い/う/え/お → ぁ/ぃ/ぅ/ぇ/ぉ
+
+  const TSU_GLYPH = SEION['つ'];
+  const VOWEL_GLYPHS = new Set([SEION['あ'], SEION['い'], SEION['う'], SEION['え'], SEION['お']]);
+  const YA_LINE_GLYPHS = new Set([SEION['や'], SEION['ゆ'], SEION['よ']]);
+
+  function decodeDetailed(input){
+    const chars = Array.from(input);
+    let result = '';
+    let hasUnsupported = false;
+    let i = 0;
+
+    while(i < chars.length){
+      const ch = chars[i];
+
+      // 長音符
+      if(ch === '⎼'){ result += 'ー'; i++; continue; }
+      // 小数点マーカー
+      if(ch === '⎲'){ result += '.'; i++; continue; }
+      // 保持された句読点（そのまま）
+      if(KEPT_PUNCT.has(ch)){ result += ch; i++; continue; }
+      // 区切り記号
+      if(ch === ' '){ result += ' '; i++; continue; }
+      // 数字
+      if(GLYPH_TO_NUM[ch] !== undefined){ result += GLYPH_TO_NUM[ch]; i++; continue; }
+
+      // 独立アスタリスク（促音／小さい母音）
+      if(ch === '*'){
+        const next = chars[i+1];
+        if(next === TSU_GLYPH){ result += 'っ'; i += 2; continue; }
+        if(next !== undefined && VOWEL_GLYPHS.has(next)){
+          const baseVowel = GLYPH_TO_SEION[next];
+          const small = SMALL_VOWEL_REVERSE[baseVowel];
+          if(small){ result += small; i += 2; continue; }
+        }
+        // 未対応：孤立したアスタリスク
+        result += ch;
+        hasUnsupported = true;
+        i++; continue;
+      }
+
+      // 清音グリフとして解読を試みる
+      const hira = GLYPH_TO_SEION[ch];
+      if(hira !== undefined){
+        let kana = hira;
+        let consumed = 1;
+
+        // 濁点／半濁点マーカー
+        const marker = chars[i+1];
+        if(marker === '〨' && DAKUTEN_REVERSE[hira]){
+          kana = DAKUTEN_REVERSE[hira];
+          consumed = 2;
+        } else if(marker === '⊛' && HANDAKUTEN_REVERSE[hira]){
+          kana = HANDAKUTEN_REVERSE[hira];
+          consumed = 2;
+        }
+
+        // 拗音（ゃゅょ）判定
+        const afterBase = chars[i + consumed];
+        const afterYa = chars[i + consumed + 1];
+        if(YOUON_ELIGIBLE.has(kana) && afterBase === '*' && afterYa !== undefined && YA_LINE_GLYPHS.has(afterYa)){
+          const yaBase = GLYPH_TO_SEION[afterYa];
+          const smallYa = SMALL_YA_REVERSE[yaBase];
+          if(smallYa){
+            result += kana + smallYa;
+            i += consumed + 2;
+            continue;
+          }
+        }
+
+        result += kana;
+        i += consumed;
+        continue;
+      }
+
+      // カテゴリ接頭辞グリフ（人／物／場所／概念）：解読時は読みやすい表記「（人）」等に変換
+      if(CATEGORY_LABEL[ch]){
+        result += '（' + CATEGORY_LABEL[ch] + '）';
+        i++; continue;
+      }
+
+      // カテゴリ接頭辞の表示形式「（人）」「（場所）」等：ひとまとまりとして認識しそのまま通す
+      if(ch === '（'){
+        let matched = false;
+        for(const label of Object.values(CATEGORY_LABEL)){
+          const labelChars = Array.from(label);
+          const end = i + 1 + labelChars.length;
+          if(chars[end] === '）' && labelChars.every((lc, k) => chars[i+1+k] === lc)){
+            result += '（' + label + '）';
+            i = end + 1;
+            matched = true;
+            break;
+          }
+        }
+        if(matched) continue;
+      }
+
+      // 未対応文字（未知のグリフなど）はそのまま素通し
+      result += ch;
+      hasUnsupported = true;
+      i++;
+    }
+
+    return { result: result, hasUnsupported: hasUnsupported };
+  }
+
+  /* ============ UI 制御 ============ */
+
+  const srcEl = document.getElementById('src');
+  const outEl = document.getElementById('out');
+  const countEl = document.getElementById('count');
+  const maxLenLabelEl = document.getElementById('maxLenLabel');
+  const statusEl = document.getElementById('statusTag');
+  const toastEl = document.getElementById('toast');
+  const fieldLabelEl = document.getElementById('fieldLabel');
+  const fieldHintEl = document.getElementById('fieldHint');
+  const outputTagEl = document.getElementById('outputTag');
+  const btnConvertEl = document.getElementById('btnConvert');
+  const prefixRowEl = document.getElementById('prefixRow');
+  const btnDirectionEl = document.getElementById('btnDirection');
+  const modeFromEl = document.getElementById('modeFrom');
+  const modeToEl = document.getElementById('modeTo');
+  const btnPronToggleEl = document.getElementById('btnPronToggle');
+  const pronLineEl = document.getElementById('pronLine');
+
+  let mode = 'encode'; // 'encode'（地球語→ゼド・グリフ） | 'decode'（ゼド・グリフ→地球語）
+  let showPron = false;
+  let EMPTY_TEXT = 'ここに変換結果が表示されマス';
+
+  const MODE_CONFIG = {
+    encode: {
+      fieldLabel: '地球語入力',
+      fieldHint: 'ひらがな・カタカナ対応',
+      placeholder: 'ここに観測記録を入力せよ。例：ホシ ヲ メグル タビ',
+      maxLen: 100,
+      outputTag: '// 解読ログ出力',
+      emptyText: 'ここに変換結果が表示されマス',
+      convertLabel: '⚡️ 変換実行'
+    },
+    decode: {
+      fieldLabel: 'ゼド・グリフ入力',
+      fieldHint: '受信した信号を入力してネ',
+      placeholder: '例：⌕⍙*⍰⋛⍕⍙⌕',
+      maxLen: 200,
+      outputTag: '// 解読結果（ひらがな）',
+      emptyText: 'ここにひらがなが表示されマス',
+      convertLabel: '🪬 解読実行'
+    }
+  };
+
+  function applyModeUI(){
+    const cfg = MODE_CONFIG[mode];
+    const isEncode = mode === 'encode';
+    fieldLabelEl.textContent = cfg.fieldLabel;
+    fieldHintEl.textContent = cfg.fieldHint;
+    srcEl.placeholder = cfg.placeholder;
+    srcEl.maxLength = cfg.maxLen;
+    maxLenLabelEl.textContent = cfg.maxLen;
+    outputTagEl.textContent = cfg.outputTag;
+    EMPTY_TEXT = cfg.emptyText;
+    btnConvertEl.textContent = cfg.convertLabel;
+    prefixRowEl.style.display = isEncode ? 'flex' : 'none';
+    btnPronToggleEl.style.display = isEncode ? '' : 'none';
+    modeFromEl.classList.toggle('active', isEncode);
+    modeToEl.classList.toggle('active', !isEncode);
+    btnDirectionEl.setAttribute('aria-label', isEncode ? '解読モードに切り替え' : '暗号化モードに切り替え');
+  }
+
+  function updateCount(){
+    const max = srcEl.maxLength;
+    const len = Array.from(srcEl.value).length;
+    countEl.textContent = len;
+    countEl.parentElement.classList.remove('warn','full');
+    if(len >= max) countEl.parentElement.classList.add('full');
+    else if(len >= max * 0.85) countEl.parentElement.classList.add('warn');
+  }
+
+  function resetOutput(){
+    outEl.classList.add('empty');
+    outEl.innerHTML = EMPTY_TEXT + '<span class="cursor"></span>';
+    statusEl.textContent = '待機中デス';
+    statusEl.classList.remove('error');
+    updatePronLine();
+  }
+
+  function updatePronLine(){
+    if(mode !== 'encode' || !showPron || outEl.classList.contains('empty')){
+      pronLineEl.classList.remove('show');
+      pronLineEl.textContent = '';
+      return;
+    }
+    const { pron } = buildPronunciation(srcEl.value);
+    if(pron){
+      pronLineEl.textContent = '🔊 ' + pron;
+      pronLineEl.classList.add('show');
+    } else {
+      pronLineEl.textContent = '';
+      pronLineEl.classList.remove('show');
+    }
+  }
+
+  function runConversion(){
+    const val = srcEl.value;
+    if(!val.trim()){
+      resetOutput();
+      return;
+    }
+    const { result, hasUnsupported } = mode === 'encode' ? convertDetailed(val) : decodeDetailed(val);
+    outEl.classList.remove('empty');
+    outEl.innerHTML = escapeHtml(result) + '<span class="cursor"></span>';
+    statusEl.textContent = hasUnsupported ? '⚠️ERROR!!' : '解読完了デス';
+    statusEl.classList.toggle('error', hasUnsupported);
+    updatePronLine();
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=> toastEl.classList.remove('show'), 1600);
+  }
+
+  srcEl.addEventListener('input', updateCount);
+  btnConvertEl.addEventListener('click', runConversion);
+
+  document.getElementById('btnClear').addEventListener('click', function(){
+    srcEl.value = '';
+    updateCount();
+    resetOutput();
+    srcEl.focus();
+  });
+
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  document.getElementById('btnCopy').addEventListener('click', function(){
+    const text = outEl.classList.contains('empty') ? '' : outEl.textContent.trim();
+    if(!text){ showToast('出力データなしデス'); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=> showToast('複写完了デス'))
+        .catch(function(err){
+          console.error('[複写失敗→代替方式へ]', err.name, err.message, {
+            isSecureContext: window.isSecureContext,
+            hasFocus: document.hasFocus(),
+            protocol: location.protocol,
+            inIframe: window.self !== window.top
+          });
+          if(fallbackCopy(text)){
+            showToast('複写完了デス');
+          } else {
+            showToast('複写失敗デス: ' + err.name);
+          }
+        });
+    } else {
+      console.warn('[複写非対応→代替方式へ]', {
+        isSecureContext: window.isSecureContext,
+        protocol: location.protocol,
+        clipboardExists: !!navigator.clipboard
+      });
+      if(fallbackCopy(text)){
+        showToast('複写完了デス');
+      } else {
+        showToast('複写非対応端末デス');
+      }
+    }
+  });
+
+  // カテゴリ接頭辞ボタン：カーソル位置へ挿入（暗号化モードのみ表示）
+  prefixRowEl.addEventListener('click', function(e){
+    const btn = e.target.closest('.prefix-btn');
+    if(!btn) return;
+    const glyph = btn.getAttribute('data-glyph');
+    const start = srcEl.selectionStart ?? srcEl.value.length;
+    const end = srcEl.selectionEnd ?? srcEl.value.length;
+    const before = srcEl.value.slice(0, start);
+    const after = srcEl.value.slice(end);
+    const insertion = glyph;
+    if(Array.from(before + insertion + after).length <= srcEl.maxLength){
+      srcEl.value = before + insertion + after;
+      const pos = (before + insertion).length;
+      srcEl.setSelectionRange(pos, pos);
+      updateCount();
+      srcEl.focus();
+    } else {
+      showToast('文字数上限デス');
+    }
+  });
+
+  // 方向反転：入出力を入れ替えつつモードを切り替える（翻訳アプリのスワップ操作と同じ挙動）
+  btnDirectionEl.addEventListener('click', function(){
+    const hadOutput = !outEl.classList.contains('empty');
+    const outputText = hadOutput ? outEl.textContent.trim() : '';
+    mode = mode === 'encode' ? 'decode' : 'encode';
+    applyModeUI();
+    srcEl.value = outputText ? outputText.slice(0, srcEl.maxLength) : '';
+    updateCount();
+    runConversion();
+    srcEl.focus();
+  });
+
+  // 発音表示トグル（暗号化モードのみ）
+  btnPronToggleEl.addEventListener('click', function(){
+    showPron = !showPron;
+    btnPronToggleEl.setAttribute('aria-pressed', showPron ? 'true' : 'false');
+    updatePronLine();
+  });
+
+  /* プライマリタブ切り替え（暗号化 / マニュアル） */
+  const tabInput = document.getElementById('tab-input');
+  const tabGuide = document.getElementById('tab-guide');
+  const screenInput = document.getElementById('screen-input');
+  const screenGuide = document.getElementById('screen-guide');
+
+  function activate(tab){
+    const isInput = tab === 'input';
+    tabInput.setAttribute('aria-selected', isInput ? 'true' : 'false');
+    tabGuide.setAttribute('aria-selected', isInput ? 'false' : 'true');
+    screenInput.classList.toggle('active', isInput);
+    screenGuide.classList.toggle('active', !isInput);
+  }
+  tabInput.addEventListener('click', ()=> activate('input'));
+  tabGuide.addEventListener('click', ()=> activate('guide'));
+
+  /* マニュアル内サブタブ切り替え（あいさつ / 使い方 / 対応表 / 交信） */
+  const subtabBtns = Array.from(document.querySelectorAll('.subtab-btn'));
+  const guidePanes = Array.from(document.querySelectorAll('.guide-pane'));
+  subtabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const target = btn.getAttribute('data-pane');
+      subtabBtns.forEach(b => b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
+      guidePanes.forEach(p => p.classList.toggle('active', p.getAttribute('data-pane') === target));
+    });
+  });
+
+  /* 対応表タブ：1文字（または拗音などの2文字）試験入力 */
+  const miniCharEl = document.getElementById('miniChar');
+  const miniResultEl = document.getElementById('miniResult');
+  const miniGlyphEl = document.getElementById('miniGlyph');
+  const miniPronEl = document.getElementById('miniPron');
+  if(miniCharEl && miniResultEl && miniGlyphEl && miniPronEl){
+    miniCharEl.addEventListener('input', function(){
+      const val = miniCharEl.value;
+      if(!val){
+        miniGlyphEl.textContent = '–';
+        miniPronEl.textContent = '';
+        miniResultEl.classList.remove('error');
+        return;
+      }
+      const { result, hasUnsupported } = convertDetailed(val);
+      if(hasUnsupported){
+        miniGlyphEl.textContent = '⚠️ERROR!!';
+        miniPronEl.textContent = '';
+        miniResultEl.classList.add('error');
+      } else {
+        miniGlyphEl.textContent = result;
+        const { pron } = buildPronunciation(val);
+        miniPronEl.textContent = pron;
+        miniResultEl.classList.remove('error');
+      }
+    });
+  }
+
+  /* 星空背景（mission-homeの.star仕様に準拠して生成） */
+  (function initStars(){
+    const field = document.getElementById('stars');
+    const count = window.innerWidth < 480 ? 50 : 80;
+    for(let i=0;i<count;i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = (Math.random()*1.6 + 0.6).toFixed(2);
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.left = (Math.random()*100) + '%';
+      s.style.top = (Math.random()*100) + '%';
+      s.style.setProperty('--d', (2 + Math.random()*4).toFixed(2) + 's');
+      s.style.setProperty('--delay', (-Math.random()*5).toFixed(2) + 's');
+      s.style.setProperty('--min', (Math.random()*0.15).toFixed(2));
+      s.style.setProperty('--max', (0.5 + Math.random()*0.4).toFixed(2));
+      field.appendChild(s);
+    }
+  })();
+
+  /* 実ビューポート高さ（モバイルのアドレスバー等の変動に追従） */
+  function setVH(){
+    document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+  }
+  setVH();
+  window.addEventListener('resize', setVH);
+  window.addEventListener('orientationchange', setVH);
+
+  /* PWA: Service Worker 登録（存在すれば） */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(()=>{ /* sw未配置でも動作に支障なし */ });
+    });
+  }
+
+  applyModeUI();
+  updateCount();
+})();
+</script>
+</body>
+</html>
